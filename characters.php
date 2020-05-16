@@ -9,12 +9,18 @@ function getTitle()
 
 $characters = file_get_contents("https://www.potterapi.com/v1/characters?key={$config['api_key']}");
 
-$characterNames = [];
+$characterDetails = [];
 
 $characters = json_decode($characters, true);
 
 foreach ($characters as $character) {
-    $characterNames[] = $character['name'];
+    $characterDetails[] = [
+        'name' => $character['name'],
+        'house' => $character['house'] ?? '',
+        'role' => $character['role'] ?? '',
+        'bloodStatus' => $character['bloodStatus'],
+        'species' => $character['species']
+    ];
 }
 
 ?>
@@ -27,15 +33,53 @@ include 'navbar.php';
 
 ?>
 
-<h1><?php echo getTitle(); ?></h1>
+<div class="pt-5">
 
-<?php
+    <div class="container">
 
-foreach ($characterNames as $name) {
-    echo $name . "<br>";
-}
+        <section class="jumbotron text-center pt-5 mb-5 bg-white">
+            <div class="container">
+                <h1 class="jumbotron-heading"><?php echo getTitle(); ?></h1>
+            </div>
+        </section>
 
-?>
+
+        <div class="bg-white p-5">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">House</th>
+                    <th scope="col">Blood Status</th>
+                    <th scope="col">Species</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $counter = 1;
+                foreach ($characterDetails as $detail):
+                    if (isset($_GET['house']) && $_GET['house'] == strtolower($detail['house'])) {
+                ?>
+                        <tr>
+                            <th scope="row"><?php echo $counter++; ?> </th>
+                            <td><?php echo $detail['name']; ?></td>
+                            <td><?php echo $detail['role']; ?></td>
+                            <td><?php echo $detail['house']; ?></td>
+                            <td><?php echo $detail['bloodStatus']; ?></td>
+                            <td><?php echo $detail['species']; ?></td>
+                        </tr>
+                <?php
+                    }
+                endforeach;
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
 <?php
 
